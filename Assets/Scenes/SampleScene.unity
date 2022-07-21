@@ -316,7 +316,7 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
@@ -383,7 +383,8 @@ Transform:
   m_LocalPosition: {x: -2.52, y: 1.46, z: 0}
   m_LocalScale: {x: 6.31, y: 6.31, z: 6.31}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 1065224853}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -419,11 +420,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2664ac7c8d640c747b00b1f8d08c6c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 873467830}
   _movementInput: {x: 0, y: 0}
   acceleration: 13
   decceleration: 13
   velPower: 0.96
   _movementSpeed: 9
+  _groundCheckRadius: 0.5
+  _groundCheckObject: {fileID: 1065224853}
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _frictionAmount: 0.5
+  _isGrounded: 0
+--- !u!1 &1065224852
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1065224853}
+  m_Layer: 0
+  m_Name: Groundcheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1065224853
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065224852}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.0559, y: -0.3992, z: 0.016819641}
+  m_LocalScale: {x: 0.1584786, y: 0.1584786, z: 0.1584786}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 873467829}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1661570565
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +478,7 @@ GameObject:
   - component: {fileID: 1661570567}
   - component: {fileID: 1661570571}
   - component: {fileID: 1661570570}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TestGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
