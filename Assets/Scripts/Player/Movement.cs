@@ -20,12 +20,15 @@ public class Movement : MonoBehaviour
     [SerializeField] private float decceleration;
     [SerializeField] private float velPower;
     [SerializeField] private float _movementSpeed;
+    [SerializeField] private float _jumpforce;
 
     #region Groundcheck
     [SerializeField] private float _groundCheckRadius = 0.5f;
     [SerializeField] private Transform _groundCheckObject;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _frictionAmount;
+    [SerializeField] private float _groundedGravaty;
+    [SerializeField] private float _defaultGravity;
     #endregion
     
     #endregion
@@ -37,6 +40,10 @@ public class Movement : MonoBehaviour
     private float _speedDif;
     private bool _facingRight = false;
     public bool _isGrounded;
+    private float _lastJumpTime;
+    private float _lastGroundedTime;
+    public bool _isJumping;
+    private bool _jumpInputReleased;
     #endregion
     
     #region Updates
@@ -51,8 +58,15 @@ public class Movement : MonoBehaviour
     void Update()
     {
         //input Handler
-        _movementInput.x = Input.GetAxisRaw("Horizontal"); 
-
+        _movementInput.x = Input.GetAxisRaw("Horizontal");
+       
+        _lastGroundedTime -= Time.deltaTime;
+        _lastJumpTime -= Time.deltaTime;
+        
+        if (Input.GetKeyDown(KeyCode.Space) && _isGrounded)
+        {
+            Jump();
+        }
 
     }
     
@@ -74,11 +88,22 @@ public class Movement : MonoBehaviour
             amount *= Mathf.Sign(_rb.velocity.x);
             _rb.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
         }
+
+        
        
 
         #endregion
         flip();
-
+        if (_isGrounded)
+        {
+            _isJumping = false;
+            _rb.gravityScale = _groundedGravaty;
+        }
+        else
+        {
+            _isJumping = true;
+            _rb.gravityScale = _defaultGravity;
+        }
         //anims
 
     }
@@ -111,6 +136,14 @@ public class Movement : MonoBehaviour
         _isGrounded = Physics2D.OverlapCircle(_groundCheckObject.position, _groundCheckRadius, _groundLayer);
     }
 
+    private void Jump()
+    {
+        _rb.AddForce(Vector2.up * _jumpforce, ForceMode2D.Impulse);
+        _lastGroundedTime = 0;
+        _lastJumpTime = 0;
+        _isJumping = true;
+        _jumpInputReleased = false;
+    }
    
     #endregion
    
