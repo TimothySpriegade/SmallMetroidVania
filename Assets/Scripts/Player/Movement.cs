@@ -1,3 +1,9 @@
+
+using System.ComponentModel;
+using System.Timers;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
@@ -9,6 +15,13 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Movement : MonoBehaviour
 {
+    #region vars
+    [SerializeField] private float _coyoteTime = 0.1f;
+    private float _coyoteTimeCounter;
+    private float _jumpBufferTime = 0.1f;
+    private float _jumpBufferCounter;
+    #endregion
+
     #region Components
     private Rigidbody2D _rb;
     public Animator _animator;
@@ -29,6 +42,7 @@ public class Movement : MonoBehaviour
     [SerializeField] private float _frictionAmount;
     [SerializeField] private float _groundedGravaty;
     [SerializeField] private float _defaultGravity;
+
     #endregion
     
     #endregion
@@ -40,10 +54,8 @@ public class Movement : MonoBehaviour
     private float _speedDif;
     private bool _facingRight = false;
     public bool _isGrounded;
-    private float _lastJumpTime;
-    private float _lastGroundedTime;
     public bool _isJumping;
-    private bool _jumpInputReleased;
+
     #endregion
     
     #region Updates
@@ -59,14 +71,42 @@ public class Movement : MonoBehaviour
     {
         //input Handler
         _movementInput.x = Input.GetAxisRaw("Horizontal");
-       
-        _lastGroundedTime -= Time.deltaTime;
-        _lastJumpTime -= Time.deltaTime;
-        
-        if (Input.GetKeyDown(KeyCode.Space) && _isGrounded)
+       #region  Timer
+        if(_isGrounded)
         {
-            Jump();
+            _coyoteTimeCounter = _coyoteTime;
         }
+        else
+        {
+            _coyoteTimeCounter -= Time.deltaTime;
+        }
+       #endregion 
+        #region Jump
+        
+        if (Input.GetKeyDown("space"))
+        {
+            _jumpBufferCounter = _jumpBufferTime;
+        }
+        else
+        {
+            _jumpBufferCounter -= Time.deltaTime;
+        }
+
+        if(_jumpBufferCounter > 0f && _coyoteTimeCounter > 0f)
+        {
+            _rb.velocity = new Vector2(_rb.velocity.x, _jumpforce);
+            _jumpBufferCounter = 0f;
+        }
+
+
+        if (Input.GetKeyUp("space")&& _rb.velocity.y > 0f)
+        {
+             _rb.velocity = new Vector2(_rb.velocity.x, _rb.velocity.y *0.5f);
+             _coyoteTimeCounter = 0f;
+        }
+
+    
+        #endregion
 
     }
     
@@ -88,12 +128,10 @@ public class Movement : MonoBehaviour
             amount *= Mathf.Sign(_rb.velocity.x);
             _rb.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
         }
-
-        
-       
-
         #endregion
+
         flip();
+        #region Groundcheck
         if (_isGrounded)
         {
             _isJumping = false;
@@ -104,6 +142,8 @@ public class Movement : MonoBehaviour
             _isJumping = true;
             _rb.gravityScale = _defaultGravity;
         }
+        #endregion
+
         //anims
 
     }
@@ -136,15 +176,8 @@ public class Movement : MonoBehaviour
         _isGrounded = Physics2D.OverlapCircle(_groundCheckObject.position, _groundCheckRadius, _groundLayer);
     }
 
-    private void Jump()
-    {
-        _rb.AddForce(Vector2.up * _jumpforce, ForceMode2D.Impulse);
-        _lastGroundedTime = 0;
-        _lastJumpTime = 0;
-        _isJumping = true;
-        _jumpInputReleased = false;
-    }
    
+
     #endregion
    
 
